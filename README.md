@@ -76,7 +76,7 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
   policy_arn = aws_iam_policy.execution_role[each.key].arn
 }
 
-# Execution role is the only role with an policy attachment
+# Execution role is the only role with an additional policy attachment
 resource "aws_iam_role_policy_attachment" "execution_role_extra" {
   for_each = module.self_hosted_roles.execution.attachments
 
