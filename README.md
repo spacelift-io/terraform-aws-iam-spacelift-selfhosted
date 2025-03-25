@@ -12,10 +12,11 @@ Below is an example of using the module with standard aws_iam_role, policies, an
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.0.0"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.0.1"
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
+  aws_dns_suffix = data.aws_partition.current.dns_suffix
 
   kms_encryption_key_arn               = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"
   kms_signing_key_arn                  = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"

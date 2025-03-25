@@ -1,3 +1,15 @@
+variable "aws_partition" {
+  type        = string
+  description = "The AWS partition to use for the bucket ARNs."
+  default     = "aws"
+}
+
+variable "aws_dns_suffix" {
+  type        = string
+  description = "The DNS suffix for the AWS region."
+  default     = "amazonaws.com"
+}
+
 variable "kms_encryption_key_arn" {
   type        = string
   description = "The ARN of the KMS key ID to use for in-app encryption."
@@ -67,10 +79,4 @@ variable "write_as_files" {
   type        = bool
   description = "Whether to write the policies as files to disk"
   default     = false
-}
-
-variable "aws_partition" {
-  type        = string
-  description = "The AWS partition to use for the bucket ARNs."
-  default     = "aws"
 }

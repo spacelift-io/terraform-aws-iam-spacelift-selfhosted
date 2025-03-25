@@ -5,7 +5,7 @@ locals {
       {
         Effect    = "Allow"
         Action    = "sts:AssumeRole"
-        Principal = { Service = "ecs-tasks.amazonaws.com" }
+        Principal = { Service = "ecs-tasks.${var.aws_dns_suffix}" }
       }
     ]
   })
@@ -42,7 +42,7 @@ locals {
       "EXECUTION" = local.execution_role_policy
     }
     attachments = {
-      "AWS_ECS_TASK_EXECUTION" = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      "AWS_ECS_TASK_EXECUTION" = "arn:${var.aws_partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
     }
   }
 }
