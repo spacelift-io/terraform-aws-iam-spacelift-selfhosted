@@ -80,3 +80,28 @@ variable "write_as_files" {
   description = "Whether to write the policies as files to disk"
   default     = false
 }
+
+variable "enable_ecs_role_assumption" {
+  type        = bool
+  description = "Indicates whether the roles should allow assumption from ECS tasks."
+  default     = true
+}
+
+variable "enable_kubernetes_role_assumption" {
+  type        = bool
+  description = "Indicates whether the roles should allow assumption from Kubernetes service accounts."
+  default     = false
+}
+
+variable "kubernetes_config" {
+  type = object({
+    aws_account_id                 = string
+    oidc_provider                  = string
+    namespace                      = string
+    server_service_account_name    = string
+    drain_service_account_name     = string
+    scheduler_service_account_name = string
+  })
+  description = "The configuration to use for creating role assumption statements when enable_kubernetes_role_assumption is true."
+  default     = null
+}

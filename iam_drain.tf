@@ -1,15 +1,7 @@
 locals {
   drain_role_assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = "sts:AssumeRole"
-        Principal = {
-          Service = "ecs-tasks.${var.aws_dns_suffix}"
-        }
-      }
-    ]
+    Version   = "2012-10-17"
+    Statement = local.drain_role_assumption_statements
   })
 
   drain_role_policy = jsonencode({
