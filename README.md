@@ -2,8 +2,11 @@
 
 This module helps users create the default IAM roles for use with self hosted Spacelift when users wish to create these roles separately from our standard process.
 
+## Using the module
+
 There are two ways to use this module.
-## Usage 1 - Using standard TF resources to create roles
+
+### Usage 1 - Using standard TF resources to create roles
 
 You can use the outputs of this module to create the roles in your own terraform code in any way you see fit.
 Below is an example of using the module with standard aws_iam_role, policies, and policy attachments.
@@ -12,7 +15,7 @@ Below is an example of using the module with standard aws_iam_role, policies, an
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.0.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
@@ -130,7 +133,7 @@ resource "aws_iam_role_policy_attachment" "server_role" {
 }
 ```
 
-## Usage 2 - Using the module to create json files on disk
+### Usage 2 - Using the module to create json files on disk
 
 Maybe your organization needs to manually provision these roles and you want to just copy and paste the role JSON.
 This module can also write the roles to disk as JSON files.
@@ -155,7 +158,7 @@ You should also attach the `arn:aws:iam::aws:policy/service-role/AmazonECSTaskEx
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.0.0"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
 
   write_as_files = true
   aws_partition  = data.aws_partition.current.partition
@@ -174,5 +177,43 @@ module "self_hosted_roles" {
   uploads_bucket_name                  = "uploads-bucket"
   user_uploaded_workspaces_bucket_name = "user-uploaded-workspaces-bucket"
   workspace_bucket_name                = "workspace-bucket"
+}
+```
+
+## ECS vs Kubernetes
+
+By default the module generates roles suitable for usage in ECS. If you want to generate roles that can be assumed by Kubernetes pods instead, populate the `kubernetes_role_assumption_config` variable:
+
+```hcl
+data "aws_caller_identity" "current" {}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 20.0"
+
+  # Other cluster configuration...
+}
+
+module "kubernetes_roles" {
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
+
+  write_as_files = false
+
+  kubernetes_role_assumption_config = {
+    # The ID of the account containing your EKS cluster.
+    aws_account_id = data.aws_caller_identity.current.account_id
+
+    oidc_provider = module.eks.oidc_provider
+
+    # The namespace you're deploying the Spacelift components to
+    namespace = "spacelift"
+
+    # The service account names you're using for Spacelift
+    server_service_account_name    = "spacelift-server"
+    drain_service_account_name     = "spacelift-drain"
+    scheduler_service_account_name = "spacelift-scheduler"
+  }
+
+  # Other configuration...
 }
 ```

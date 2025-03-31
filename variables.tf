@@ -80,3 +80,16 @@ variable "write_as_files" {
   description = "Whether to write the policies as files to disk"
   default     = false
 }
+
+variable "kubernetes_role_assumption_config" {
+  type = object({
+    aws_account_id                 = string
+    oidc_provider                  = string
+    namespace                      = string
+    server_service_account_name    = string
+    drain_service_account_name     = string
+    scheduler_service_account_name = string
+  })
+  description = "The configuration to use to allow pods running in EKS to assume the roles. By default this is null and ECS role assumption statements will be generated."
+  default     = null
+}
