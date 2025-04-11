@@ -24,7 +24,7 @@ locals {
 
   server_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Effect   = "Allow"
         Action   = ["s3:AbortMultipartUpload", "s3:DeleteObject", "s3:GetObject", "s3:ListBucket", "s3:PutObject", "s3:PutObjectTagging", "s3:GetObjectVersion", "s3:ListBucketVersions"]
@@ -40,7 +40,29 @@ locals {
         Action   = ["s3:AbortMultipartUpload", "s3:PutObject"]
         Resource = [local.large_queue_messages_bucket_arn, "${local.large_queue_messages_bucket_arn}/*"]
       }
-    ]
+      ],
+      local.has_sqs_queues ? [{
+        Effect = "Allow",
+        Action = [
+          "sqs:SendMessage"
+        ],
+        Resource = [
+          var.sqs_queues.webhooks
+        ]
+      }] : [],
+      local.has_iot_topic ? [{
+        Effect = "Allow",
+        Action = [
+          "iot:AttachPolicy",
+          "iot:AttachPrincipalPolicy",
+          "iot:CreateCertificateFromCsr",
+          "iot:RegisterCertificateWithoutCA",
+          "iot:CreateKeysAndCertificate",
+          "iot:CreatePolicy"
+        ],
+        Resource = ["*"],
+      }] : []
+    )
   })
 
   drain_and_server_policy = jsonencode({
@@ -166,7 +188,49 @@ locals {
           "kms:Verify",
         ]
         Resource = [var.kms_signing_key_arn]
-      }]
+      }],
+      local.has_sqs_queues ? [{
+        Effect = "Allow",
+        Action = [
+          "sqs:SendMessage"
+        ],
+        Resource = [
+          var.sqs_queues.async_jobs,
+          var.sqs_queues.events_inbox,
+          var.sqs_queues.async_jobs_fifo,
+          var.sqs_queues.iot
+        ]
+      }] : [],
+      local.has_iot_topic ? [
+        {
+          Effect = "Allow",
+          Action = [
+            "iot:DeleteCertificate",
+            "iot:DeletePolicy",
+            "iot:DetachPolicy",
+            "iot:DetachPrincipalPolicy",
+            "iot:UpdateCertificate"
+          ],
+          Resource = ["*"],
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "iot:Publish"
+          ],
+          Resource = [
+            var.iot_topic
+          ],
+        },
+        {
+          Effect = "Allow",
+          Action = [
+            "iot:DescribeCertificate",
+            "iot:GetPolicy"
+          ],
+          Resource = ["*"],
+        }
+      ] : []
     )
   })
 

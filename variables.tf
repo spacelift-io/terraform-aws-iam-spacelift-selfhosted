@@ -87,3 +87,24 @@ variable "kubernetes_role_assumption_config" {
   description = "The configuration to use to allow pods running in EKS to assume the roles. By default this is null and ECS role assumption statements will be generated."
   default     = null
 }
+
+variable "sqs_queues" {
+  type = object({
+    deadletter      = string
+    deadletter_fifo = string
+    async_jobs      = string
+    events_inbox    = string
+    async_jobs_fifo = string
+    cronjobs        = string
+    webhooks        = string
+    iot             = string
+  })
+  description = "A map of SQS queue ARNs, in case the user chooses to use SQS for message queues."
+  default     = null
+}
+
+variable "iot_topic" {
+  type        = string
+  description = "The IoT topic when AWS IoT is used as a message broker."
+  default     = null
+}

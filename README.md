@@ -15,7 +15,7 @@ Below is an example of using the module with standard aws_iam_role, policies, an
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.0"
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
@@ -157,7 +157,7 @@ You should also attach the `arn:aws:iam::aws:policy/service-role/AmazonECSTaskEx
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.0"
 
   write_as_files = true
   aws_partition  = data.aws_partition.current.partition
@@ -178,6 +178,47 @@ module "self_hosted_roles" {
 }
 ```
 
+## Message Queue Options
+
+The module supports configuring IAM permissions for two different messaging queue options:
+
+### SQS Queues
+
+You can provide SQS queue ARNs using the `sqs_queues` variable to grant the Spacelift components the necessary permissions to interact with SQS queues:
+
+```hcl
+module "self_hosted_roles" {
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.0"
+
+  # Other configuration...
+
+  sqs_queues = {
+    deadletter      = "arn:aws:sqs:us-west-2:123456789012:spacelift-dlq"
+    deadletter_fifo = "arn:aws:sqs:us-west-2:123456789012:spacelift-dlq.fifo"
+    async_jobs      = "arn:aws:sqs:us-west-2:123456789012:spacelift-async-jobs"
+    events_inbox    = "arn:aws:sqs:us-west-2:123456789012:spacelift-events-inbox"
+    async_jobs_fifo = "arn:aws:sqs:us-west-2:123456789012:spacelift-async-jobs.fifo"
+    cronjobs        = "arn:aws:sqs:us-west-2:123456789012:spacelift-cronjobs"
+    webhooks        = "arn:aws:sqs:us-west-2:123456789012:spacelift-webhooks"
+    iot             = "arn:aws:sqs:us-west-2:123456789012:spacelift-iot"
+  }
+}
+```
+
+### AWS IoT Topic
+
+You can provide an AWS IoT topic ARN using the `iot_topic` variable to grant the Spacelift components the necessary permissions to publish to and manage the topic:
+
+```hcl
+module "self_hosted_roles" {
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.0"
+
+  # Other configuration...
+
+  iot_topic = "arn:aws:iot:us-west-2:123456789012:topic/spacelift/readonly/*"
+}
+```
+
 ## ECS vs Kubernetes
 
 By default the module generates roles suitable for usage in ECS. If you want to generate roles that can be assumed by Kubernetes pods instead, populate the `kubernetes_role_assumption_config` variable:
@@ -193,7 +234,7 @@ module "eks" {
 }
 
 module "kubernetes_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.1.0"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.0"
 
   write_as_files = false
 

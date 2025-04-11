@@ -20,4 +20,6 @@ locals {
 
   ecs_role_assumption_enabled        = var.kubernetes_role_assumption_config == null
   kubernetes_role_assumption_enabled = var.kubernetes_role_assumption_config != null
+  has_sqs_queues                     = var.sqs_queues != null
+  has_iot_topic                      = var.iot_topic != null
 }
