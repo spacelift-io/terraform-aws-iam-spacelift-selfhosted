@@ -14,7 +14,7 @@ locals {
     Effect = "Allow"
     Action = "sts:AssumeRole"
     Principal = {
-      Service = "ecs-tasks.${var.aws_dns_suffix}"
+      Service = "ecs-tasks.amazonaws.com"
     }
   }
 

@@ -4,12 +4,6 @@ variable "aws_partition" {
   default     = "aws"
 }
 
-variable "aws_dns_suffix" {
-  type        = string
-  description = "The DNS suffix for the AWS region."
-  default     = "amazonaws.com"
-}
-
 variable "kms_encryption_key_arn" {
   type        = string
   description = "The ARN of the KMS key ID to use for in-app encryption."

@@ -19,7 +19,6 @@ module "self_hosted_roles" {
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
-  aws_dns_suffix = data.aws_partition.current.dns_suffix
 
   kms_encryption_key_arn               = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"
   kms_signing_key_arn                  = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"
@@ -162,7 +161,6 @@ module "self_hosted_roles" {
 
   write_as_files = true
   aws_partition  = data.aws_partition.current.partition
-  aws_dns_suffix = data.aws_partition.current.dns_suffix
 
   kms_encryption_key_arn               = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"
   kms_signing_key_arn                  = "arn:aws:kms:us-west-2:123456789012:key/1234abcd-12ab-34cd-56ef-123456789012"
