@@ -24,7 +24,7 @@ locals {
 
   drain_role_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Effect   = "Allow"
         Action   = ["s3:DeleteObject", "s3:ListBucket"]
@@ -50,7 +50,26 @@ locals {
         Action   = ["s3:PutObjectTagging"]
         Resource = [local.run_logs_bucket_arn, "${local.run_logs_bucket_arn}/*"]
       }
-    ]
+      ],
+      local.has_sqs_queues ? [{
+        Effect = "Allow"
+        Action = [
+          "sqs:ChangeMessageVisibility",
+          "sqs:DeleteMessage",
+          "sqs:GetQueueAttributes",
+          "sqs:ReceiveMessage"
+        ]
+        Resource = [
+          var.sqs_queues.async_jobs,
+          var.sqs_queues.async_jobs_fifo,
+          var.sqs_queues.cronjobs,
+          var.sqs_queues.deadletter,
+          var.sqs_queues.deadletter_fifo,
+          var.sqs_queues.webhooks,
+          var.sqs_queues.iot,
+          var.sqs_queues.events_inbox
+        ]
+    }] : [])
   })
 
   drain = {
