@@ -14,7 +14,7 @@ locals {
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
           StringEquals = {
-            "${var.kubernetes_role_assumption_config.oidc_provider}:aud" = "sts.${var.aws_dns_suffix}"
+            "${var.kubernetes_role_assumption_config.oidc_provider}:aud" = "sts.amazonaws.com"
             "${var.kubernetes_role_assumption_config.oidc_provider}:sub" = "system:serviceaccount:${var.kubernetes_role_assumption_config.namespace}:${var.kubernetes_role_assumption_config.drain_service_account_name}"
           }
         }
