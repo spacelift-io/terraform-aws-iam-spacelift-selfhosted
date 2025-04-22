@@ -103,6 +103,12 @@ variable "sqs_queues" {
   default     = null
 }
 
+variable "secrets_manager_secret_arns" {
+  type        = list(string)
+  description = "List of additional secrets manager secret ARNs to use for the application. These will be added to the execution role policy."
+  default     = []
+}
+
 variable "iot_topic" {
   type        = string
   description = "The IoT topic when AWS IoT is used as a message broker."

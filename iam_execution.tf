@@ -7,24 +7,32 @@ locals {
   execution_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "kms:Decrypt",
-        ]
-        Resource = [var.kms_key_arn]
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:DescribeLogGroups",
-          "logs:DescribeLogStreams",
-          "logs:PutLogEvents"
-        ],
-        Resource = "*"
-      },
+      concat([
+        {
+          Effect = "Allow"
+          Action = [
+            "kms:Decrypt",
+          ]
+          Resource = [var.kms_key_arn]
+        },
+        {
+          Effect = "Allow"
+          Action = [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:DescribeLogGroups",
+            "logs:DescribeLogStreams",
+            "logs:PutLogEvents"
+          ],
+          Resource = "*"
+        },
+        ], var.secrets_manager_secret_arns != null && length(var.secrets_manager_secret_arns) > 0 ? [
+        {
+          Effect   = "Allow"
+          Action   = ["secretsmanager:GetSecretValue"]
+          Resource = var.secrets_manager_secret_arns
+        }
+      ] : []),
     ]
   })
 
