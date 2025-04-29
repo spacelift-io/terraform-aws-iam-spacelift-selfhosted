@@ -65,7 +65,14 @@ locals {
           "kms:Verify",
         ]
         Resource = [var.kms_signing_key_arn]
-      }]
+      }],
+      local.has_sqs_queues ? [{
+        Effect = "Allow",
+        Action = [
+          "sqs:SendMessage"
+        ],
+        Resource = [var.sqs_queues.cronjobs]
+      }] : [],
     )
   })
 
