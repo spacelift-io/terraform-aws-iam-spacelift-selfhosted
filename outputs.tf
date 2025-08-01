@@ -17,3 +17,8 @@ output "server" {
   value       = local.server
   description = "The IAM role details for a default server role."
 }
+
+output "vcs_gateway" {
+  value       = local.vcs_gateway
+  description = "The IAM role details for a default VCS gateway role."
+}

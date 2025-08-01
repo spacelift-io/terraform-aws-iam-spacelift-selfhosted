@@ -15,7 +15,7 @@ Below is an example of using the module with standard aws_iam_role, policies, an
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
@@ -157,7 +157,7 @@ You should also attach the `arn:aws:iam::aws:policy/service-role/AmazonECSTaskEx
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
 
   write_as_files = true
   aws_partition  = data.aws_partition.current.partition
@@ -188,7 +188,7 @@ You can provide SQS queue ARNs using the `sqs_queues` variable to grant the Spac
 
 ```hcl
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
 
   # Other configuration...
 
@@ -211,7 +211,7 @@ You can provide an AWS IoT topic ARN using the `iot_topic` variable to grant the
 
 ```hcl
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
 
   # Other configuration...
 
@@ -234,7 +234,7 @@ module "eks" {
 }
 
 module "kubernetes_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.2.1"
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
 
   write_as_files = false
 
