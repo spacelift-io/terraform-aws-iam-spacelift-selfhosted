@@ -13,7 +13,7 @@ locals {
       },
       {
         Effect   = "Allow"
-        Action   = ["sts:AssumeRole", "sts:TagSession"],
+        Action   = ["sts:AssumeRole"],
         Resource = ["*"],
       },
       {
