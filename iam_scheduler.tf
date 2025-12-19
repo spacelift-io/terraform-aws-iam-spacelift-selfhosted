@@ -29,9 +29,19 @@ locals {
     Statement = concat(
       [
         {
-          Effect   = "Allow"
-          Action   = ["cloudwatch:PutMetricData"]
-          Resource = ["*"]
+          Effect = "Allow"
+          Action = [
+            "xray:PutTraceSegments",
+            "xray:PutTelemetryRecords",
+            "xray:GetSamplingRules",
+            "xray:GetSamplingTargets",
+            "xray:GetSamplingStatisticSummaries",
+            "cloudwatch:PutMetricData",
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents"
+          ]
+          Resource = "*"
         },
         {
           Effect   = "Allow"
