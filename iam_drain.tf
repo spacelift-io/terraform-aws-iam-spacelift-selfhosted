@@ -37,11 +37,6 @@ locals {
       },
       {
         Effect   = "Allow"
-        Action   = ["s3:AbortMultipartUpload", "s3:DeleteObject", "s3:GetObject", "s3:PutObject"]
-        Resource = [local.workspace_bucket_arn, "${local.workspace_bucket_arn}/*"]
-      },
-      {
-        Effect   = "Allow"
         Action   = ["s3:GetObject"]
         Resource = [local.large_queue_messages_bucket_arn, "${local.large_queue_messages_bucket_arn}/*"]
       },
