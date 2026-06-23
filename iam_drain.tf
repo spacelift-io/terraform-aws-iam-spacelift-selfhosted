@@ -59,6 +59,13 @@ locals {
           var.sqs_queues.iot,
           var.sqs_queues.events_inbox
         ]
+      }] : [],
+      local.has_sqs_queues ? [{
+        Effect = "Allow"
+        Action = [
+          "sqs:SendMessage"
+        ]
+        Resource = [var.sqs_queues.cronjobs]
     }] : [])
   })
 
