@@ -49,6 +49,11 @@ variable "run_logs_bucket_name" {
   description = "The name of the run logs bucket."
 }
 
+variable "run_observability_bucket_name" {
+  type        = string
+  description = "The name of the run observability bucket."
+}
+
 variable "states_bucket_name" {
   type        = string
   description = "The name of the states bucket."
