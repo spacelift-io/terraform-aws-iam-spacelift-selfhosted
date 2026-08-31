@@ -5,6 +5,7 @@ locals {
   modules_bucket_arn                  = "arn:${var.aws_partition}:s3:::${var.modules_bucket_name}"
   policy_inputs_bucket_arn            = "arn:${var.aws_partition}:s3:::${var.policy_inputs_bucket_name}"
   run_logs_bucket_arn                 = "arn:${var.aws_partition}:s3:::${var.run_logs_bucket_name}"
+  run_observability_bucket_arn        = "arn:${var.aws_partition}:s3:::${var.run_observability_bucket_name}"
   states_bucket_arn                   = "arn:${var.aws_partition}:s3:::${var.states_bucket_name}"
   uploads_bucket_arn                  = "arn:${var.aws_partition}:s3:::${var.uploads_bucket_name}"
   user_uploaded_workspaces_bucket_arn = "arn:${var.aws_partition}:s3:::${var.user_uploaded_workspaces_bucket_name}"
