@@ -115,6 +115,16 @@ locals {
       {
         Effect = "Allow",
         Action = [
+          "s3:DeleteObject"
+        ],
+        Resource = [
+          local.run_logs_bucket_arn,
+          "${local.run_logs_bucket_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
           "s3:GetObject",
           "s3:ListBucket"
         ],
@@ -128,6 +138,16 @@ locals {
         Action = [
           "s3:AbortMultipartUpload",
           "s3:PutObject"
+        ],
+        Resource = [
+          local.run_observability_bucket_arn,
+          "${local.run_observability_bucket_arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "s3:DeleteObject"
         ],
         Resource = [
           local.run_observability_bucket_arn,
