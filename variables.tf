@@ -120,3 +120,14 @@ variable "iot_topic" {
   description = "The IoT topic when AWS IoT is used as a message broker."
   default     = null
 }
+
+variable "rds_iam_auth_config" {
+  type = object({
+    aws_account_id      = string
+    region              = string
+    cluster_resource_id = string
+    db_usernames        = list(string)
+  })
+  description = "Configuration for IAM database authentication. When set, the server and drain roles are allowed to generate auth tokens for the listed database users. Leave null when connecting with a password."
+  default     = null
+}

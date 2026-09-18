@@ -224,6 +224,11 @@ locals {
         ]
         Resource = [var.kms_signing_key_arn]
       }],
+      local.rds_iam_auth_enabled ? [{
+        Effect   = "Allow",
+        Action   = ["rds-db:connect"],
+        Resource = local.rds_db_user_arns
+      }] : [],
       local.has_sqs_queues ? [{
         Effect = "Allow",
         Action = [
