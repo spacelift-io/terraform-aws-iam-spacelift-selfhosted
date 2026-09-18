@@ -221,6 +221,59 @@ module "self_hosted_roles" {
 }
 ```
 
+## RDS IAM Database Authentication
+
+If you run Spacelift against an Aurora cluster with `iam_database_authentication_enabled`, you can let the server and drain authenticate with short-lived IAM auth tokens instead of a static password. Set `rds_iam_auth_config` and the shared drain/server policy gains `rds-db:connect` on the database users you list:
+
+```hcl
+module "self_hosted_roles" {
+  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+
+  # Other configuration...
+
+  rds_iam_auth_config = {
+    aws_account_id      = data.aws_caller_identity.current.account_id
+    region              = var.region
+
+    # The resource ID of the Aurora cluster, e.g. cluster-ABCDEFGHIJKLMNOPQRSTUVWXYZ.
+    # Note that this is not the cluster identifier.
+    cluster_resource_id = module.spacelift.rds_cluster_resource_id
+
+    # The database users Spacelift connects as. These need to be granted the
+    # rds_iam role inside the database. Do not use the master user here,
+    # see below.
+    db_usernames = ["spacelift_iam"]
+  }
+}
+```
+
+The IAM policy only covers the token generation side. The database user itself still has to exist and be granted the `rds_iam` role, and neither happens automatically:
+
+```sql
+-- The application user. No password, it can only authenticate with an IAM token.
+CREATE USER spacelift_iam;
+
+-- rds_iam is a built-in role on every Aurora PostgreSQL cluster. Membership in it
+-- is what makes RDS accept an IAM auth token for this user.
+GRANT rds_iam TO spacelift_iam;
+
+-- spacelift is the master user, which owns every table the migrations create.
+-- This is a role name, not the database name, even though the two happen to match.
+-- Without it the new user can connect but cannot read a single table.
+GRANT spacelift TO spacelift_iam;
+```
+
+The `rds_iam` role is created by RDS on every Aurora PostgreSQL cluster, but no user is a member of it by default, including the user Spacelift connects as. You can check with:
+
+```sql
+SELECT pg_has_role('spacelift_iam', 'rds_iam', 'MEMBER');
+```
+
+> [!WARNING]
+> Do not grant `rds_iam` to the master user (`spacelift` by default). That grant switches the user to IAM-only authentication, so its password stops working - which breaks the running deployment and removes your break-glass access to the database. Create a dedicated user for the application instead, and leave the master user on password authentication.
+
+Inheriting the master role is the low-maintenance option: the new user automatically has access to tables that future migrations create, with nothing to re-grant after an upgrade. It gives up privilege reduction in exchange - `spacelift_iam` ends up as capable as the master user. What it does buy you is that no long-lived password sits on the application's connection path. If you want a narrower grant instead, give the user `SELECT`/`INSERT`/`UPDATE`/`DELETE` on the schema plus `ALTER DEFAULT PRIVILEGES FOR ROLE spacelift`, and keep in mind that this only keeps working while migrations run as the master user.
+
 ## ECS vs Kubernetes
 
 By default the module generates roles suitable for usage in ECS. If you want to generate roles that can be assumed by Kubernetes pods instead, populate the `kubernetes_role_assumption_config` variable:

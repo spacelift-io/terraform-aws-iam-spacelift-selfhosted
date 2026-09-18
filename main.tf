@@ -23,4 +23,10 @@ locals {
   kubernetes_role_assumption_enabled = var.kubernetes_role_assumption_config != null
   has_sqs_queues                     = var.sqs_queues != null
   has_iot_topic                      = var.iot_topic != null
+  rds_iam_auth_enabled               = var.rds_iam_auth_config != null
+
+  rds_db_user_arns = local.rds_iam_auth_enabled ? [
+    for username in var.rds_iam_auth_config.db_usernames :
+    "arn:${var.aws_partition}:rds-db:${var.rds_iam_auth_config.region}:${var.rds_iam_auth_config.aws_account_id}:dbuser:${var.rds_iam_auth_config.cluster_resource_id}/${username}"
+  ] : []
 }
