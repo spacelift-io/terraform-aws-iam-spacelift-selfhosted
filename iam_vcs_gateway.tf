@@ -24,8 +24,8 @@ locals {
 
   vcs_gateway_policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
-      {
+    Statement = concat(
+      [{
         Effect = "Allow"
         Action = [
           "xray:PutTraceSegments",
@@ -39,8 +39,13 @@ locals {
           "logs:PutLogEvents"
         ]
         Resource = "*"
-      },
-    ]
+      }],
+      local.rds_iam_auth_enabled ? [{
+        Effect   = "Allow",
+        Action   = ["rds-db:connect"],
+        Resource = local.rds_db_user_arns
+      }] : [],
+    )
   })
 
   vcs_gateway = {
