@@ -223,7 +223,7 @@ module "self_hosted_roles" {
 
 ## RDS IAM Database Authentication
 
-If you run Spacelift against an Aurora cluster with `iam_database_authentication_enabled`, you can let the server and drain authenticate with short-lived IAM auth tokens instead of a static password. Set `rds_iam_auth_config` and the shared drain/server policy gains `rds-db:connect` on the database users you list:
+If you run Spacelift against an Aurora cluster with `iam_database_authentication_enabled`, you can let the services authenticate with short-lived IAM auth tokens instead of a static password. Set `rds_iam_auth_config` and the server, drain and VCS gateway policies gain `rds-db:connect` on the database users you list:
 
 ```hcl
 module "self_hosted_roles" {

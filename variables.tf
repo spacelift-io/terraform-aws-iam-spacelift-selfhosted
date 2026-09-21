@@ -128,6 +128,6 @@ variable "rds_iam_auth_config" {
     cluster_resource_id = string
     db_usernames        = list(string)
   })
-  description = "Configuration for IAM database authentication. When set, the server and drain roles are allowed to generate auth tokens for the listed database users. Leave null when connecting with a password."
+  description = "Configuration for IAM database authentication. When set, the server, drain and VCS gateway roles are allowed to generate auth tokens for the listed database users. Leave null when connecting with a password."
   default     = null
 }
