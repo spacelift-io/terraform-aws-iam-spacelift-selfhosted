@@ -9,6 +9,14 @@ locals {
       {
         Effect = "Allow"
         Action = [
+          "license-manager:ListReceivedLicenses",
+          "license-manager:CheckoutLicense"
+        ]
+        Resource = ["*"]
+      },
+      {
+        Effect = "Allow"
+        Action = [
           "xray:PutTraceSegments",
           "xray:PutTelemetryRecords",
           "xray:GetSamplingRules",
