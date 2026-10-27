@@ -15,7 +15,8 @@ Below is an example of using the module with standard aws_iam_role, policies, an
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   write_as_files = false
   aws_partition  = data.aws_partition.current.partition
@@ -131,6 +132,29 @@ resource "aws_iam_role_policy_attachment" "server_role" {
   role       = aws_iam_role.server_role.name
   policy_arn = aws_iam_policy.server_role[each.key].arn
 }
+
+#####################
+# VCS Gateway IAM Role
+#####################
+# Only needed if you run the VCS gateway.
+resource "aws_iam_role" "vcs_gateway_role" {
+  name               = "spacelift-vcs-gateway-role"
+  assume_role_policy = module.self_hosted_roles.vcs_gateway.assume_role
+}
+
+resource "aws_iam_policy" "vcs_gateway_role" {
+  for_each = module.self_hosted_roles.vcs_gateway.policies
+
+  name   = "${aws_iam_role.vcs_gateway_role.name}-${each.key}"
+  policy = each.value
+}
+
+resource "aws_iam_role_policy_attachment" "vcs_gateway_role" {
+  for_each = module.self_hosted_roles.vcs_gateway.policies
+
+  role       = aws_iam_role.vcs_gateway_role.name
+  policy_arn = aws_iam_policy.vcs_gateway_role[each.key].arn
+}
 ```
 
 ### Usage 2 - Using the module to create json files on disk
@@ -146,10 +170,10 @@ The following files will be created:
 - `./policies/drain_role_policy.json`: The policy for the *drain* role.
 - `./policies/execution_role_assume_role_policy.json`: The assume role policy for the *execution* role.
 - `./policies/execution_role_policy.json`: The policy for the *execution* role.
-- `./policies/scheduler_role_assume_role_policy.json`: The assume role policy for the *scheduler* role.
-- `./policies/scheduler_role_policy.json`: The policy for the *scheduler* role.
-- `./policies/server_role_assume_role_policy.json`: The assume role policy for the *server* role.
-- `./policies/server_role_policy.json`: The policy for the *server* role.
+- `./policies/scheduler_assume_role_policy.json`: The assume role policy for the *scheduler* role.
+- `./policies/scheduler_policy.json`: The policy for the *scheduler* role.
+- `./policies/server_assume_role_policy.json`: The assume role policy for the *server* role.
+- `./policies/server_policy.json`: The policy for the *server* role.
 - `./policies/drain_and_server_policy.json`: An additional policy for the *drain* and *server* roles.
 
 You should also attach the `arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy` policy to the *execution* role.
@@ -158,7 +182,8 @@ You should also attach the `arn:aws:iam::aws:policy/service-role/AmazonECSTaskEx
 data "aws_partition" "current" {}
 
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   write_as_files = true
   aws_partition  = data.aws_partition.current.partition
@@ -190,7 +215,8 @@ You can provide SQS queue ARNs using the `sqs_queues` variable to grant the Spac
 
 ```hcl
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   # Other configuration...
 
@@ -213,7 +239,8 @@ You can provide an AWS IoT topic ARN using the `iot_topic` variable to grant the
 
 ```hcl
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   # Other configuration...
 
@@ -227,13 +254,14 @@ If you run Spacelift against an Aurora cluster with `iam_database_authentication
 
 ```hcl
 module "self_hosted_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   # Other configuration...
 
   rds_iam_auth_config = {
-    aws_account_id      = data.aws_caller_identity.current.account_id
-    region              = var.region
+    aws_account_id = data.aws_caller_identity.current.account_id
+    region         = var.region
 
     # The resource ID of the Aurora cluster, e.g. cluster-ABCDEFGHIJKLMNOPQRSTUVWXYZ.
     # Note that this is not the cluster identifier.
@@ -289,7 +317,8 @@ module "eks" {
 }
 
 module "kubernetes_roles" {
-  source = "github.com/spacelift-io/terraform-aws-iam-spacelift-selfhosted?ref=v1.3.0"
+  source  = "spacelift-io/iam-spacelift-selfhosted/aws"
+  version = "~> 1.12"
 
   write_as_files = false
 
@@ -303,9 +332,10 @@ module "kubernetes_roles" {
     namespace = "spacelift"
 
     # The service account names you're using for Spacelift
-    server_service_account_name    = "spacelift-server"
-    drain_service_account_name     = "spacelift-drain"
-    scheduler_service_account_name = "spacelift-scheduler"
+    server_service_account_name      = "spacelift-server"
+    drain_service_account_name       = "spacelift-drain"
+    scheduler_service_account_name   = "spacelift-scheduler"
+    vcs_gateway_service_account_name = "spacelift-vcs-gateway"
   }
 
   # Other configuration...
