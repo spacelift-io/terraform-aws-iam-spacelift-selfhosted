@@ -22,3 +22,8 @@ output "vcs_gateway" {
   value       = local.vcs_gateway
   description = "The IAM role details for a default VCS gateway role."
 }
+
+output "flows" {
+  value       = local.flows
+  description = "The IAM role details for a default Spacelift Flows role. Null when flows_bucket_name is not set."
+}

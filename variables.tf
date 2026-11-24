@@ -74,6 +74,18 @@ variable "workspace_bucket_name" {
   description = "The name of the workspace bucket."
 }
 
+variable "flows_bucket_name" {
+  type        = string
+  description = "The name of the bucket Spacelift Flows stores its data in."
+  default     = null
+}
+
+variable "flows_kms_key_arn" {
+  type        = string
+  description = "The ARN of the KMS key the Flows bucket is encrypted with."
+  default     = null
+}
+
 variable "write_as_files" {
   type        = bool
   description = "Whether to write the policies as files to disk"
@@ -89,6 +101,7 @@ variable "kubernetes_role_assumption_config" {
     drain_service_account_name       = string
     scheduler_service_account_name   = string
     vcs_gateway_service_account_name = string
+    flows_service_account_name       = string
   })
   description = "The configuration to use to allow pods running in EKS to assume the roles. By default this is null and ECS role assumption statements will be generated."
   default     = null
