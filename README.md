@@ -155,6 +155,30 @@ resource "aws_iam_role_policy_attachment" "vcs_gateway_role" {
   role       = aws_iam_role.vcs_gateway_role.name
   policy_arn = aws_iam_policy.vcs_gateway_role[each.key].arn
 }
+
+#####################
+# Flows IAM Role
+#####################
+# Only needed if you run Spacelift Flows. Set `flows_bucket_name` and `flows_kms_key_arn`
+# on the module, otherwise the flows output is null.
+resource "aws_iam_role" "flows_role" {
+  name               = "spacelift-flows-role"
+  assume_role_policy = module.self_hosted_roles.flows.assume_role
+}
+
+resource "aws_iam_policy" "flows_role" {
+  for_each = module.self_hosted_roles.flows.policies
+
+  name   = "${aws_iam_role.flows_role.name}-${each.key}"
+  policy = each.value
+}
+
+resource "aws_iam_role_policy_attachment" "flows_role" {
+  for_each = module.self_hosted_roles.flows.policies
+
+  role       = aws_iam_role.flows_role.name
+  policy_arn = aws_iam_policy.flows_role[each.key].arn
+}
 ```
 
 ### Usage 2 - Using the module to create json files on disk
@@ -336,6 +360,7 @@ module "kubernetes_roles" {
     drain_service_account_name       = "spacelift-drain"
     scheduler_service_account_name   = "spacelift-scheduler"
     vcs_gateway_service_account_name = "spacelift-vcs-gateway"
+    flows_service_account_name       = "spacelift-flows"
   }
 
   # Other configuration...
